@@ -1,0 +1,58 @@
+pragma solidity ^0.8.0;
+
+contract TonyMixer {
+    event Deposit(address indexed sender, uint256 amount, uint256 depositIndex);
+    event Withdrawal(address indexed recipient, uint256 amount);
+
+    mapping(uint256 => bool) public usedNonces;
+    mapping(address => uint256[]) public deposits;
+    address public treasury;
+
+    constructor(address _treasury) public {
+        treasury = _treasury;
+    }
+
+    function deposit() public payable {
+        deposits[msg.sender].push(msg.value);
+        emit Deposit(msg.sender, msg.value, deposits[msg.sender].length - 1);
+    }
+
+    function withdraw(uint256 amount, uint256 nonce, bytes memory signature) public {
+        require(!usedNonces[nonce]);
+        usedNonces[nonce] = true;
+
+        bytes32 message = prefixed(keccak256(abi.encodePacked(msg.sender, amount, nonce, this)));
+        require(recoverSigner(message, signature) == treasury);
+
+        payable(msg.sender).transfer(amount);
+        emit Withdrawal(msg.sender, amount);
+    }
+
+    function prefixed(bytes32 hash) internal pure returns (bytes32) {
+        return keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", hash));
+    }
+
+    function recoverSigner(bytes32 message, bytes memory sig) internal pure returns (address) {
+        (uint8 v, bytes32 r, bytes32 s) = splitSignature(sig);
+        return ecrecover(message, v, r, s);
+    }
+
+    function splitSignature(bytes memory sig) internal pure returns (uint8, bytes32, bytes32) {
+        require(sig.length == 65);
+
+        bytes32 r;
+        bytes32 s;
+        uint8 v;
+
+        assembly {
+            // first 32 bytes, after the length prefix
+            r := mload(add(sig, 32))
+            // second 32 bytes
+            s := mload(add(sig, 64))
+            // final byte (first byte of the next 32 bytes)
+            v := byte(0, mload(add(sig, 96)))
+        }
+
+        return (v, r, s);
+    }
+}
