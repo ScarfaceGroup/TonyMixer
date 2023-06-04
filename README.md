@@ -18,3 +18,6 @@ Deposit gas cost: 1088354 (43381 + 50859 * tree_depth)
 Withdraw gas cost: 301233
 Circuit Constraints = 28271 (1869 + 1325 * tree_depth)
 Circuit Proof time = 10213ms (1071 + 347 * tree_depth)
+
+
+More update incoming in these days with commits ----
