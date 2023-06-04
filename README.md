@@ -1,4 +1,4 @@
-Tony’s Dry-Cleaning Service - The DApp Mixer 
+**Tony’s Dry-Cleaning Service - The DApp Mixer 
 
 Tony’s Dry-Cleaning Service is a non-custodial privacy solution based on zkSNARKs built on the Binance Smart Chain. It enhances transaction privacy by breaking the on-chain link between source and destination addresses. It uses a smart contract that accepts BNB and $TONY deposits that can be withdrawn by a different address. Whenever tokens are withdrawn by the new address, there is no way to link the withdrawal to the deposit, ensuring complete privacy.
 
